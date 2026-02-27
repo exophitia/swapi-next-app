@@ -2,27 +2,27 @@ import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { isUrl, mapSwapiUrlToLocalHref } from "@/lib/swapi-routes";
 
-/** Formatiert Schlüssel für die Anzeige (z. B. "birth_year" → "birth year"). */
+/** Formats keys for display (e.g. "birth_year" → "birth year"). */
 const defaultKeyLabel = (key: string) => key.replace(/_/g, " ");
 
 export type DetailEntry = [key: string, value: unknown];
 
 type DetailCardProps = {
-  /** Haupttitel (z. B. Name der Person / des Planeten). */
+  /** Main title (e.g. name of the person / planet). */
   title: string;
-  /** Optionale Zeile unter dem Titel (z. B. "People · ID 1"). */
+  /** Optional line below the title (e.g. "People · ID 1"). */
   subtitle?: string;
-  /** Liste von [Schlüssel, Wert]-Paaren für die Beschreibungsliste. */
+  /** List of [key, value] pairs for the description list. */
   entries: DetailEntry[];
-  /** Optional: eigene Formatierung der Schlüssel-Labels. */
+  /** Optional: custom formatting for the key labels. */
   formatKeyLabel?: (key: string) => string;
-  /** Link zurück (z. B. "← Zurück zu People"). */
+  /** Back link (e.g. "← Back to People"). */
   backLink: { href: string; children: React.ReactNode };
 };
 
 /**
- * Karte mit Titel, optionalem Untertitel, Key-Value-Liste und Zurück-Link.
- * Wiederverwendbar für Detailansichten (Person, Planet, Film, …).
+ * Card with title, optional subtitle, key-value list and back link.
+ * Reusable for detail views (person, planet, film, …).
  */
 export function DetailCard({
   title,

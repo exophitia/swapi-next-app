@@ -7,7 +7,7 @@ type BackLinkProps = {
   children: React.ReactNode;
 };
 
-/** Zurück-Link (z. B. „← Zur Startseite“ oder „← Zurück zu People“). */
+/** Back link (e.g. "← To start page" or "← Back to People"). */
 export function BackLink({ href, children }: BackLinkProps) {
   return (
     <Link href={href} className={linkClass}>

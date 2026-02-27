@@ -1,14 +1,14 @@
 type PageHeaderProps = {
   title: string;
-  /** Optionaler Beschreibungstext unter der Überschrift. */
+  /** Optional description text below the heading. */
   children?: React.ReactNode;
-  /** Abstand unter dem Text: "normal" (mb-6) oder "large" (mb-8). */
+  /** Spacing below the text: "normal" (mb-6) or "large" (mb-8). */
   spacing?: "normal" | "large";
 };
 
 /**
- * Zentrale Seiten-Überschrift mit optionalem Beschreibungstext.
- * Wird z. B. auf der Startseite und in Ressourcenlisten genutzt.
+ * Central page heading with optional description text.
+ * Used, for example, on the home page and in resource lists.
  */
 export function PageHeader({ title, children, spacing = "normal" }: PageHeaderProps) {
   const paragraphClass =

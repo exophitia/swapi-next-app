@@ -18,7 +18,7 @@ export default async function RootLayout({
   try {
     resourceKeys = await getSwapiResourceKeys();
   } catch {
-    // Nav auslassen, wenn API nicht erreichbar (z. B. bei 404-Route oder Netzwerkfehler)
+    // Skip navigation when API is not reachable (e.g. 404 route or network error)
   }
 
   return (

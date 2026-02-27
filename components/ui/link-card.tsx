@@ -8,7 +8,7 @@ type LinkCardProps = {
   children: React.ReactNode;
 };
 
-/** Ein Karten-Link für Listen (Kategorien, Ressourcen-Items). */
+/** A card-style link for lists (categories, resource items). */
 export function LinkCard({ href, children }: LinkCardProps) {
   return (
     <Link href={href} className={cardClass}>

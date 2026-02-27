@@ -90,7 +90,7 @@ export function getIdFromUrl(url: string): string {
  * Returns a display name for a SWAPI entity.
  *
  * Uses the `name` field when present, otherwise the `title` field (for films).
- * Falls back to `"Unbekannt"` if neither is a string.
+ * Falls back to the German label `"Unbekannt"` ("Unknown") if neither is a string.
  */
 export function getDisplayName(item: SwapiResourceItem): string {
   const name = "name" in item ? item.name : item.title;

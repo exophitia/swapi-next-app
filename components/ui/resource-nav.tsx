@@ -5,7 +5,7 @@ type ResourceNavProps = {
   resourceKeys: string[];
 };
 
-/** Horizontale Navigation über die SWAPI-Ressourcen (People, Planets, …). */
+/** Horizontal navigation across SWAPI resources (People, Planets, …). */
 export function ResourceNav({ resourceKeys }: ResourceNavProps) {
   if (resourceKeys.length === 0) return null;
 

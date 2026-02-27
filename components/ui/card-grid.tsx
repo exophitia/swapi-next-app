@@ -8,13 +8,13 @@ type CardGridItem = {
 
 type CardGridProps = {
   items: CardGridItem[];
-  /** Zusätzliche Klassen für das Grid (z. B. Gap-Größe). */
+  /** Additional classes for the grid (e.g. gap size). */
   className?: string;
 };
 
 const baseGridClass = "grid sm:grid-cols-2";
 
-/** Grid aus LinkCards, wiederverwendbar für Kategorien- und Ressourcen-Listen. */
+/** Grid of LinkCards, reusable for category and resource lists. */
 export function CardGrid({ items, className }: CardGridProps) {
   const gridClass = [baseGridClass, className].filter(Boolean).join(" ");
 

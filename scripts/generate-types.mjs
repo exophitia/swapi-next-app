@@ -32,7 +32,7 @@ async function main() {
   ];
   const header = headerLines.join("\n");
 
-  // Root-Response speichern und Typen für die Übersicht generieren
+  // Store root response and generate types for the overview
   const rootSamplePath = path.join(SAMPLES_DIR, "root.json");
   await writeFile(rootSamplePath, JSON.stringify(data, null, 2), "utf-8");
 
