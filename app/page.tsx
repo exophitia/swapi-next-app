@@ -1,29 +1,22 @@
-import Link from "next/link";
 import { getSwapiResourceKeys, labelForResource } from "@/lib/swapi-routes";
+import { CardGrid } from "@/components/ui/card-grid";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function HomePage() {
   const resourceKeys = await getSwapiResourceKeys();
 
+  const items = resourceKeys.map((key) => ({
+    key,
+    href: `/${key}`,
+    label: labelForResource(key),
+  }));
+
   return (
     <div>
-      <h1 className="mb-2 text-3xl font-bold text-amber-400">
-        Star Wars – SWAPI
-      </h1>
-      <p className="mb-8 text-slate-400">
+      <PageHeader title="Star Wars – SWAPI" spacing="large">
         Wähle eine Kategorie in der Navigation oder unten:
-      </p>
-      <ul className="grid gap-2 sm:grid-cols-2">
-        {resourceKeys.map((key) => (
-          <li key={key}>
-            <Link
-              href={`/${key}`}
-              className="block rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3 text-slate-100 transition hover:border-amber-500/50 hover:bg-slate-800"
-            >
-              {labelForResource(key)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      </PageHeader>
+      <CardGrid items={items} className="gap-2" />
     </div>
   );
 }

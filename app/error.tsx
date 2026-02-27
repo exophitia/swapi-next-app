@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { PageHeader } from "@/components/ui/page-header";
+import { BackLink } from "@/components/ui/back-link";
 
 export default function Error({
   error,
@@ -11,8 +12,9 @@ export default function Error({
 }) {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold text-amber-400">Etwas ist schiefgelaufen</h1>
-      <p className="text-slate-400">Die Seite konnte nicht geladen werden.</p>
+      <PageHeader title="Etwas ist schiefgelaufen" spacing="normal">
+        Die Seite konnte nicht geladen werden.
+      </PageHeader>
       <div className="flex gap-4">
         <button
           type="button"
@@ -21,12 +23,7 @@ export default function Error({
         >
           Erneut versuchen
         </button>
-        <Link
-          href="/"
-          className="rounded bg-slate-700 px-4 py-2 text-slate-200 hover:bg-slate-600"
-        >
-          Zur Startseite
-        </Link>
+        <BackLink href="/">← Zur Startseite</BackLink>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getSwapiResourceKeys,
@@ -7,6 +6,9 @@ import {
   getIdFromUrl,
   getDisplayName,
 } from "@/lib/swapi-routes";
+import { CardGrid } from "@/components/ui/card-grid";
+import { BackLink } from "@/components/ui/back-link";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function ResourcePage({
   params,
@@ -21,36 +23,27 @@ export default async function ResourcePage({
   if (!data) notFound();
 
   const label = labelForResource(resource);
+  const items = data.results.map((item) => {
+    const id = item.url ? getIdFromUrl(item.url) : "";
+    const name = getDisplayName(item);
+    const href = id ? `/${resource}/${id}` : "#";
+
+    return {
+      key: item.url ?? name,
+      href,
+      label: name,
+    };
+  });
 
   return (
     <div>
-      <h1 className="mb-2 text-3xl font-bold text-amber-400">{label}</h1>
-      <p className="mb-6 text-slate-400">
+      <PageHeader title={label}>
         {data.count} Einträge (Seite 1)
         {data.next ? " · Weitere Seiten über die API verfügbar" : ""}
-      </p>
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {data.results.map((item) => {
-          const id = item.url ? getIdFromUrl(item.url) : "";
-          const name = getDisplayName(item);
-          const href = id ? `/${resource}/${id}` : "#";
-
-          return (
-            <li key={item.url ?? name}>
-              <Link
-                href={href}
-                className="block rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3 text-slate-100 transition hover:border-amber-500/50 hover:bg-slate-800"
-              >
-                {name}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      </PageHeader>
+      <CardGrid items={items} className="gap-3" />
       <p className="mt-6">
-        <Link href="/" className="text-amber-400 underline hover:text-amber-300">
-          ← Zur Startseite
-        </Link>
+        <BackLink href="/">← Zur Startseite</BackLink>
       </p>
     </div>
   );
