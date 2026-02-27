@@ -9,11 +9,11 @@ export interface Species {
     hair_colors:      string;
     eye_colors:       string;
     average_lifespan: string;
-    homeworld:        string;
+    homeworld: string | null;
     language:         string;
     people:           string[];
     films:            string[];
-    created:          Date;
-    edited:           Date;
+    created:          string;
+    edited:           string;
     url:              string;
 }

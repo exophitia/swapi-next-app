@@ -17,7 +17,7 @@ import type { Vehicles } from "./vehicles";
 import type { Starships } from "./starships";
 import type { SwapiRoot } from "./root";
 
-/** Union of all SWAPI resource item types (single entity from API). */
+/** Union of all SWAPI resource item types (single entity from the API). */
 export type SwapiResourceItem =
   | People
   | Planets
@@ -26,5 +26,5 @@ export type SwapiResourceItem =
   | Vehicles
   | Starships;
 
-/** Resource keys that have a list endpoint and detail endpoint. */
+/** Resource keys that have both a list endpoint and a detail endpoint. */
 export type SwapiResourceKey = keyof SwapiRoot;

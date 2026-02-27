@@ -1,8 +1,9 @@
 import Link from "next/link";
+import type { SwapiResourceKey } from "@/lib/types";
 import { labelForResource } from "@/lib/swapi-routes";
 
 type ResourceNavProps = {
-  resourceKeys: string[];
+  resourceKeys: SwapiResourceKey[];
 };
 
 /** Horizontal navigation across SWAPI resources (People, Planets, …). */

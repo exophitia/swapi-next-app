@@ -14,7 +14,7 @@ export interface Vehicles {
     vehicle_class:          string;
     pilots:                 any[];
     films:                  string[];
-    created:                Date;
-    edited:                 Date;
+    created:                string;
+    edited:                 string;
     url:                    string;
 }

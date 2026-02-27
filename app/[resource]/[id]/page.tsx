@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   getSwapiResourceKeys,
   getResourceItem,
+  isSwapiResourceKey,
   labelForResource,
   getDisplayName,
   getDisplayableEntries,
@@ -15,7 +16,7 @@ export default async function ResourceDetailPage({
 }) {
   const { resource, id } = await params;
   const keys = await getSwapiResourceKeys();
-  if (!keys.includes(resource)) notFound();
+  if (!isSwapiResourceKey(resource, keys)) notFound();
 
   const item = await getResourceItem(resource, id);
   if (!item) notFound();

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   getSwapiResourceKeys,
   getResourcePage,
+  isSwapiResourceKey,
   labelForResource,
   getIdFromUrl,
   getDisplayName,
@@ -17,7 +18,7 @@ export default async function ResourcePage({
 }) {
   const { resource } = await params;
   const keys = await getSwapiResourceKeys();
-  if (!keys.includes(resource)) notFound();
+  if (!isSwapiResourceKey(resource, keys)) notFound();
 
   const data = await getResourcePage(resource);
   if (!data) notFound();
@@ -26,7 +27,7 @@ export default async function ResourcePage({
   const items = data.results.map((item) => {
     const id = item.url ? getIdFromUrl(item.url) : "";
     const name = getDisplayName(item);
-    const href = id ? `/${resource}/${id}` : "#";
+    const href = id ? `/${resource}/${id}` : undefined;
 
     return {
       key: item.url ?? name,

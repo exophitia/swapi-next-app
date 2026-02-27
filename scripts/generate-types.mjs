@@ -52,6 +52,38 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+/** SWAPI fields that can be null in the API (e.g. Droid has no homeworld). */
+const NULLABLE_STRING_KEYS = new Set(["homeworld"]);
+
+/**
+ * Converts a plain JSON value to Zod schema source code (string).
+ * Used to generate lib/swapi-schemas.ts from the same samples as the types.
+ * @param {unknown} value - JSON value
+ * @param {string} [objectKey] - Key when value is inside an object (used for .nullable())
+ */
+function jsonToZodSchema(value, objectKey = "") {
+  if (value === null) return "z.null()";
+  if (typeof value === "string") {
+    return NULLABLE_STRING_KEYS.has(objectKey) ? "z.string().nullable()" : "z.string()";
+  }
+  if (typeof value === "number") return "z.number()";
+  if (typeof value === "boolean") return "z.boolean()";
+  if (Array.isArray(value)) {
+    const first = value[0];
+    const itemSchema =
+      first !== undefined ? jsonToZodSchema(first) : "z.string()";
+    return `z.array(${itemSchema})`;
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value).map(([k, v]) => {
+      const safeKey = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(k) ? k : JSON.stringify(k);
+      return `${safeKey}: ${jsonToZodSchema(v, k)}`;
+    });
+    return `z.object({ ${entries.join(", ")} })`;
+  }
+  return "z.unknown()";
+}
+
 /**
  * Main entry point: orchestrates fetching, sampling and type generation.
  *
@@ -82,7 +114,7 @@ async function main() {
 
   const rootOutPath = path.join(TYPES_DIR, "root.ts");
   execSync(
-    `npx quicktype "${rootSamplePath}" -o "${rootOutPath}" --just-types --top-level SwapiRoot`,
+    `npx quicktype "${rootSamplePath}" -o "${rootOutPath}" --just-types --top-level SwapiRoot --no-date-times`,
     { stdio: "inherit", cwd: ROOT }
   );
   const rootContent = await readFile(rootOutPath, "utf-8");
@@ -124,10 +156,14 @@ async function main() {
     const typeName = capitalize(resource);
     const outPath = path.join(TYPES_DIR, `${resource}.ts`);
     execSync(
-      `npx quicktype "${samplePath}" -o "${outPath}" --just-types --top-level ${typeName}`,
+      `npx quicktype "${samplePath}" -o "${outPath}" --just-types --top-level ${typeName} --no-date-times`,
       { stdio: "inherit", cwd: ROOT }
     );
-    const typeContent = await readFile(outPath, "utf-8");
+    let typeContent = await readFile(outPath, "utf-8");
+    typeContent = typeContent.replace(
+      /homeworld:\s*string;/g,
+      "homeworld: string | null;"
+    );
     await writeFile(outPath, `${header}${typeContent}`, "utf-8");
   }
 
@@ -163,7 +199,41 @@ async function main() {
     "utf-8"
   );
 
+  // 5) Generate Zod schemas from the same samples (all fields as in the types).
+  const LIB_DIR = path.join(ROOT, "lib");
+  const swapiRootSchemaCode = jsonToZodSchema(data);
+
+  const itemSchemaCodes = [];
+  for (const resource of keys) {
+    const samplePath = path.join(SAMPLES_DIR, `${resource}.json`);
+    const raw = await readFile(samplePath, "utf-8");
+    const item = JSON.parse(raw);
+    itemSchemaCodes.push(jsonToZodSchema(item));
+  }
+  const resultsSchemaCode = `z.array(z.union([${itemSchemaCodes.join(", ")}]))`;
+  const resourcePageResponseSchemaCode =
+    `z.object({ count: z.number(), next: z.string().nullable(), previous: z.string().nullable(), results: ${resultsSchemaCode} })`;
+
+  const schemasLines = [
+    ...headerLines,
+    'import { z } from "zod";',
+    "",
+    "/** Root SWAPI response (resource keys → URLs). Generated from samples/root.json */",
+    `export const swapiRootSchema = ${swapiRootSchemaCode};`,
+    "",
+    "/** Paginated list response. Used to validate getResourcePage() responses. */",
+    `export const resourcePageResponseSchema = ${resourcePageResponseSchemaCode};`,
+    "",
+  ];
+
+  await writeFile(
+    path.join(LIB_DIR, "swapi-schemas.ts"),
+    schemasLines.join("\n"),
+    "utf-8"
+  );
+
   console.log("Types generated in lib/types/");
+  console.log("Zod schemas generated in lib/swapi-schemas.ts");
 }
 
 main().catch((err) => {

@@ -1,21 +1,37 @@
 import type { SwapiResourceItem, SwapiResourceKey, SwapiRoot } from "@/lib/types";
+import type { z } from "zod";
+import {
+  resourcePageResponseSchema,
+  swapiRootSchema,
+} from "@/lib/swapi-schemas";
+
+/** Response shape for a paginated SWAPI resource list (one page). Inferred from schema. */
+export type ResourcePageResponse = z.infer<typeof resourcePageResponseSchema>;
 
 /** Base URL for all SWAPI requests. */
 export const SWAPI_BASE = "https://swapi.py4e.com/api";
+
+/** Cache revalidation interval in seconds (24 hours). */
+const CACHE_REVALIDATE_SECONDS = 86400;
 
 /**
  * Default fetch options for SWAPI calls.
  * Uses Next.js `revalidate` to cache responses for 24 hours.
  */
-export const fetchOptions = { next: { revalidate: 86400 } as const };
-
-/** Response shape for a paginated SWAPI resource list (one page). */
-export type ResourcePageResponse = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: SwapiResourceItem[];
+export const fetchOptions = {
+  next: { revalidate: CACHE_REVALIDATE_SECONDS } as const,
 };
+
+/**
+ * Type guard: returns true if `key` is one of the known SWAPI resource keys.
+ * Use after validating against the result of `getSwapiResourceKeys()` to narrow the type.
+ */
+export function isSwapiResourceKey(
+  key: string,
+  keys: ReadonlyArray<SwapiResourceKey>
+): key is SwapiResourceKey {
+  return keys.includes(key as SwapiResourceKey);
+}
 
 /**
  * Fetches all available SWAPI resource keys from the root endpoint.
@@ -23,9 +39,14 @@ export type ResourcePageResponse = {
  * Example result: `["people", "planets", "films", "species", "vehicles", "starships"]`.
  * Only entries that look like valid HTTP URLs are returned.
  */
-export async function getSwapiResourceKeys(): Promise<string[]> {
+export async function getSwapiResourceKeys(): Promise<SwapiResourceKey[]> {
   const res = await fetch(`${SWAPI_BASE}/`, fetchOptions);
-  const data = (await res.json()) as SwapiRoot;
+  const raw = await res.json();
+  const parsed = swapiRootSchema.safeParse(raw);
+  if (!parsed.success) {
+    return [];
+  }
+  const data = parsed.data;
 
   return (Object.keys(data) as (keyof SwapiRoot)[]).filter(
     (key): key is SwapiResourceKey =>
@@ -50,7 +71,7 @@ export function labelForResource(key: string): string {
  * @returns The parsed page response or `null` if the request fails.
  */
 export async function getResourcePage(
-  resource: string,
+  resource: SwapiResourceKey,
   page = 1
 ): Promise<ResourcePageResponse | null> {
   const res = await fetch(
@@ -58,7 +79,10 @@ export async function getResourcePage(
     fetchOptions
   );
   if (!res.ok) return null;
-  return res.json() as Promise<ResourcePageResponse>;
+  const raw = await res.json();
+  const parsed = resourcePageResponseSchema.safeParse(raw);
+  if (!parsed.success) return null;
+  return parsed.data;
 }
 
 /**
@@ -69,7 +93,7 @@ export async function getResourcePage(
  * @returns The parsed entity or `null` if it does not exist or the request fails.
  */
 export async function getResourceItem(
-  resource: string,
+  resource: SwapiResourceKey,
   id: string
 ): Promise<SwapiResourceItem | null> {
   const res = await fetch(`${SWAPI_BASE}/${resource}/${id}/`, fetchOptions);
@@ -98,13 +122,13 @@ export function getDisplayName(item: SwapiResourceItem): string {
 }
 
 /** Returns true if a value is a string that looks like an HTTP URL. */
-export function isUrl(value: unknown): boolean {
-  return typeof value === "string" && value.startsWith("http");
+export function isUrl(value: string): boolean {
+  return value.startsWith("http");
 }
 
 /** Returns true if a value is an array that contains at least one URL string. */
-function isUrlArray(value: unknown): boolean {
-  return Array.isArray(value) && value.some(isUrl);
+function isUrlArray(value: string[]): boolean {
+  return value.some(isUrl);
 }
 
 /**
@@ -130,7 +154,7 @@ export function getDisplayableEntries(
       }
 
       // Arrays of URL strings (relations such as films, vehicles, ...)
-      if (isUrlArray(value)) {
+      if (Array.isArray(value) && value.every((v): v is string => typeof v === "string") && isUrlArray(value)) {
         return true;
       }
 

@@ -9,12 +9,12 @@ export interface People {
     eye_color:  string;
     birth_year: string;
     gender:     string;
-    homeworld:  string;
+    homeworld: string | null;
     films:      string[];
     species:    string[];
     vehicles:   string[];
     starships:  string[];
-    created:    Date;
-    edited:     Date;
+    created:    string;
+    edited:     string;
     url:        string;
 }

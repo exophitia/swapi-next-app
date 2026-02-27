@@ -1,8 +1,9 @@
-import { LinkCard } from "@/components/ui/link-card";
+import { LinkCard, linkCardClass } from "@/components/ui/link-card";
 
 type CardGridItem = {
   key: string;
-  href: string;
+  /** When missing, the item is rendered as non-clickable text with the same card styling. */
+  href?: string;
   label: string;
 };
 
@@ -22,7 +23,11 @@ export function CardGrid({ items, className }: CardGridProps) {
     <ul className={gridClass}>
       {items.map(({ key, href, label }) => (
         <li key={key}>
-          <LinkCard href={href}>{label}</LinkCard>
+          {href ? (
+            <LinkCard href={href}>{label}</LinkCard>
+          ) : (
+            <span className={linkCardClass}>{label}</span>
+          )}
         </li>
       ))}
     </ul>

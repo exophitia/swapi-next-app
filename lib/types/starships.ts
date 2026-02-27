@@ -16,7 +16,7 @@ export interface Starships {
     starship_class:         string;
     pilots:                 any[];
     films:                  string[];
-    created:                Date;
-    edited:                 Date;
+    created:                string;
+    edited:                 string;
     url:                    string;
 }

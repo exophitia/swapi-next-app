@@ -10,6 +10,7 @@ This project generates most TypeScript types **automatically** from the SWAPI AP
   - Single-entity types per resource (e.g. `People`, `Films`, …) in `lib/types/*.ts`
   - An overview type for the SWAPI root response (`SwapiRoot`) in `lib/types/root.ts`
   - A central type index (`SwapiResourceItem`, `SwapiResourceKey`, re-exports) in `lib/types/index.ts`
+- **Zod schemas** are generated from the same samples and written to `lib/swapi-schemas.ts` (`swapiRootSchema`, `resourcePageResponseSchema`). They are used at runtime to validate API responses. One run of `npm run generate:types` updates both types and Zod schemas.
 
 ### Requirements
 

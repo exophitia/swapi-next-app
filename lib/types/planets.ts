@@ -12,7 +12,7 @@ export interface Planets {
     population:      string;
     residents:       string[];
     films:           string[];
-    created:         Date;
-    edited:          Date;
+    created:         string;
+    edited:          string;
     url:             string;
 }

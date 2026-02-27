@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { SwapiResourceKey } from "@/lib/types";
 import { getSwapiResourceKeys } from "@/lib/swapi-routes";
 import { ResourceNav } from "@/components/ui/resource-nav";
 import "./globals.css";
@@ -14,7 +15,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let resourceKeys: string[] = [];
+  let resourceKeys: SwapiResourceKey[] = [];
   try {
     resourceKeys = await getSwapiResourceKeys();
   } catch {
