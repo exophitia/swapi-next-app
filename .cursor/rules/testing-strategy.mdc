@@ -1,0 +1,18 @@
+---
+description: "Test strategy for SWAPI domain logic and UI components"
+globs:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "lib/**/*"
+  - "components/**/*"
+alwaysApply: false
+---
+
+- **Test stack**: Use Vitest as the test runner and `@testing-library/react` + `@testing-library/jest-dom` for React components, following the existing tests in `components/ui/*.test.tsx`.
+- **Test behavior, not implementation**: UI tests should focus on visible behavior (e.g. `getByRole`, `getByText`, links and text content), not on internal implementation details or specific CSS classes.
+- **Smoke tests for new UI components**: Every new UI component should have at least one smoke test that ensures key content and interactions (e.g. a link, button or title) are rendered as expected.
+- **Targeted tests for domain helpers**: Important functions in `lib/swapi-routes.ts` (e.g. `getIdFromUrl`, `mapSwapiUrlToLocalHref`, `getDisplayName`, `getDisplayableEntries`) should have dedicated unit tests, similar to `lib/swapi-routes.test.ts`.
+- **Mocking fetch logic**: When testing functions that use `fetch` (e.g. `getSwapiResourceKeys`, `getResourcePage`), mock the global fetch call and cover both success and failure scenarios (including invalid responses).
+- **Keep tests small and maintainable**: Before adding complex setup logic to individual tests, extract shared helpers or fixtures so tests remain readable and robust over time.
+- **Consistent DOM environment**: For React component tests, use the same DOM environment configuration as the existing tests (e.g. `@vitest-environment happy-dom`) to keep behavior stable and predictable.
+

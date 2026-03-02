@@ -1,0 +1,17 @@
+---
+description: "Architecture and data flow standards for the SWAPI Next.js app"
+globs:
+  - "app/**/*"
+  - "lib/**/*"
+alwaysApply: false
+---
+
+- **Pages in the App Router (`app/*`)**: Responsible for routing, param parsing and orchestrating domain functions – not for low‑level fetching or complex data transformation.
+- **SWAPI access**: External SWAPI requests should always go through functions in `lib/swapi-routes.ts` (or thin helpers built on top of them), never directly from `app/*` or `components/*`.
+- **Domain layer (`lib/*`)**: Put new SWAPI-related logic into `lib/swapi-routes.ts` or related modules and reuse existing helpers like `getSwapiResourceKeys`, `getResourcePage`, `getResourceItem`, `getDisplayName`, `getDisplayableEntries` and `mapSwapiUrlToLocalHref` where possible.
+- **Type guards and validation**: For route params that represent SWAPI resources, use `isSwapiResourceKey` (and similar guards) and call `notFound()` when validation fails so that invalid resources result in a 404.
+- **Error handling**: Use `notFound()` for missing resources or IDs (so the segment-specific `not-found` pages are rendered). For unexpected errors, rely on the global error boundary `app/error.tsx`.
+- **Layout and navigation**: The root layout (`app/layout.tsx`) is the central place for global navigation and shared SWAPI initial data (e.g. resource keys). Additional global fetches should be centralized there or in the domain layer whenever possible.
+- **Small, focused modules**: Shape new functions so that each has a clearly defined responsibility (e.g. “extract ID from URL”, “compute display name”, “filter displayable entries”) and then compose them in the pages.
+- **Extending the data flow**: When adding new SWAPI resources or views, first try to reuse the existing “root keys → list → detail” flow instead of introducing parallel, divergent paths.
+

@@ -1,0 +1,16 @@
+---
+description: "Patterns for UI components and Tailwind styling in the SWAPI project"
+globs:
+  - "components/ui/**/*"
+  - "app/**/*"
+alwaysApply: false
+---
+
+- **Presentation‑oriented UI components**: Components in `components/ui/*` must not contain fetch logic or SWAPI-specific decisions; they receive already prepared data via props.
+- **Reuse existing building blocks**: Before creating new UI components, check whether existing ones like `PageHeader`, `CardGrid`, `DetailCard`, `BackLink`, `ResourceNav` or `LinkCard` can be reused or slightly extended.
+- **Central Tailwind classes**: Define shared Tailwind class strings (e.g. for cards or links) as constants like `linkCardClass` and reuse them across components instead of duplicating raw class strings.
+- **Semantic HTML structure**: When building new components, follow the existing examples (`<main>`, `<header>`, `<nav>`, `<article>`, `<ul>/<li>`) to keep the markup semantic and accessible.
+- **Small, focused components**: If a component accumulates too many props or responsibilities, extract subcomponents with a single clear purpose (e.g. list views, detail views, navigation elements).
+- **Consistent layout**: For spacing, text sizes and colors, align with the existing pages (`app/page.tsx`, `app/[resource]/page.tsx`, `app/[resource]/[id]/page.tsx`) and UI components to maintain a consistent look and feel.
+- **Client vs. server components**: Only add `"use client"` where it is strictly necessary (e.g. interactive buttons in `app/error.tsx`). By default, UI components should remain server‑compatible as long as they don’t rely on browser-only APIs.
+
